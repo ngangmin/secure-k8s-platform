@@ -7,8 +7,6 @@
 name: AWS workflow
 on:
   push
-env:
-  AWS_REGION : “us-east-1"
 # permission can be added at job level or workflow level
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -24,4 +22,4 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::727646506835:role/github_devops
           role-session-name: githubactions
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: “us-east-1"
