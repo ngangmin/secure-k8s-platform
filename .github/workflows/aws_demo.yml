@@ -14,6 +14,9 @@ permissions:
 jobs:
   Deploy-to-aws:
     runs-on: ubuntu-latest
+    permissions:
+            id-token: write
+            contents: read
     steps:
       - name: Git clone the repository
         uses: actions/checkout@v4
@@ -23,7 +26,4 @@ jobs:
           role-to-assume: arn:aws:iam::727646506835:role/github_devops
           role-session-name: githubactions
           aws-region: "us-east-1"
-          permissions:
-            id-token: write
-            contents: read
 
