@@ -1,18 +1,34 @@
 name: Terraform Deployment
 
-on:                 # Top-level trigger
+on:
   push:
     branches:
       - main
   workflow_dispatch:
+
+# 1. ADD THIS: Permissions for OIDC
+permissions:
+  id-token: write # Required for requesting the JWT
+  contents: read  # Required for actions/checkout
+
 jobs:
   plan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      # 2. ADD THIS: Configure AWS Credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::727646506835:role/github_devops
+          role-session-name: githubactions
+          aws-region: us-east-1
+
       - uses: hashicorp/setup-terraform@v3
       - run: terraform init
       - run: terraform plan -out=tfplan
+      
       - uses: actions/upload-artifact@v4
         with:
           name: tfplan
@@ -22,11 +38,24 @@ jobs:
     needs: plan
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    # 3. ADD THIS: Apply also needs permissions
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
+      
+      # 4. ADD THIS: Re-authenticate for the Apply job
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::727646506835:role/github_devops
+          role-session-name: githubactions
+          aws-region: us-east-1
+
+      - uses: hashicorp/setup-terraform@v3
       - uses: actions/download-artifact@v4
         with:
           name: tfplan
+      - run: terraform init # Required to download providers/backend for apply
       - run: terraform apply -auto-approve tfplan
-
-
