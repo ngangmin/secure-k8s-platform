@@ -21,3 +21,9 @@ jobs:
         with:
           name: tfplan
       - run: terraform apply -auto-approve tfplan
+
+  on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # This enables the "Run workflow" button
+
