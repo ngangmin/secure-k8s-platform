@@ -22,4 +22,4 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::727646506835:role/github_devops
           role-session-name: githubactions
-          aws-region: “us-east-1"
+          aws-region: "us-east-1"
